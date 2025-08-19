@@ -1,0 +1,629 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}All States COVID-19 Data{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 text-center mb-4">
+        <h1 class="display-5 fw-bold text-primary">
+            <i class="fas fa-flag me-2"></i>All States Data
+        </h1>
+        <p class="lead text-muted">Complete COVID-19 statistics for all Indian states</p>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-5">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-3"></i>
+                <h3>{{ totals.confirmed|floatformat:2 }}</h3>
+                <p class="mb-0">Total Confirmed</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #e08de9, #9d30aa);">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <h3>{{ totals.active|floatformat:2 }}</h3>
+                <p class="mb-0">Total Active</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #4facfe, #00f2fe);">
+            <div class="card-body text-center">
+                <i class="fas fa-heart fa-2x mb-3"></i>
+                <h3>{{ totals.recovered|floatformat:2 }}</h3>
+                <p class="mb-0">Total Recovered</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #fa709a, #fee140);">
+            <div class="card-body text-center">
+                <i class="fas fa-skull fa-2x mb-3"></i>
+                <h3>{{ totals.deaths|floatformat:2 }}</h3>
+                <p class="mb-0">Total Deaths</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search states...">
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-sort"></i>
+            </span>
+            <select id="sortSelect" class="form-select">
+                <option value="confirmed">Sort by Confirmed Cases</option>
+                <option value="active">Sort by Active Cases</option>
+                <option value="recovered">Sort by Recovered</option>
+                <option value="deaths">Sort by Deaths</option>
+                <option value="name">Sort by State Name</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- States Table -->
+<div class="card shadow-lg">
+    <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center" 
+         style="background: linear-gradient(45deg, #667eea, #764ba2);">
+        <h4 class="mb-0">
+            <i class="fas fa-table me-2"></i>State-wise Data
+        </h4>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-light btn-sm" onclick="exportToCSV()">
+                <i class="fas fa-download me-1"></i>Export CSV
+            </button>
+            <button type="button" class="btn btn-light btn-sm" onclick="window.print()">
+                <i class="fas fa-print me-1"></i>Print
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="statesTable" style="vertical-align: middle;">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">State Name</th>
+                        <th scope="col">Confirmed</th>
+                        <th scope="col">Active</th>
+                        <th scope="col">Recovered</th>
+                        <th scope="col">Deaths</th>
+                        <th scope="col">Recovery Rate</th>
+                        <th scope="col">Mortality Rate</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for state in states %}
+                    <tr class="state-row" 
+                        data-state="{{ state.state|lower }}" 
+                        data-confirmed="{{ state.confirmed|default:0 }}" 
+                        data-active="{{ state.active|default:0 }}" 
+                        data-recovered="{{ state.recovered|default:0 }}" 
+                        data-deaths="{{ state.deaths|default:0 }}">
+                        <td class="fw-bold">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-map-pin text-primary me-2"></i>
+                                <strong>{{ state.state }}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary fs-7">{{ state.confirmed|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning fs-7">{{ state.active|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success fs-7">{{ state.recovered|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger fs-7">{{ state.deaths|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            {% if state.confirmed and state.confirmed > 0 and state.recovered %}
+                                {% widthratio state.recovered state.confirmed 100 as recovery_rate %}
+                                <div class="progress" style="height: 30px; width: 100px;">
+                                    <div class="progress-bar bg-success justify-content-center" 
+                                         data-width="{{ recovery_rate }}"
+                                         title="{{ recovery_rate }}%">
+                                        <small>{{ recovery_rate }}%</small>
+                                    </div>
+                                </div>
+                            {% elif state.recovery_rate %}
+                                <div class="progress" style="height: 30px; width: 100px;">
+                                    <div class="progress-bar bg-success" 
+                                         data-width="{{ state.recovery_rate|floatformat:0 }}"
+                                         title="{{ state.recovery_rate|floatformat:1 }}%">
+                                        <small>{{ state.recovery_rate|floatformat:1 }}%</small>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if state.confirmed and state.confirmed > 0 and state.deaths %}
+                                {% widthratio state.deaths state.confirmed 100 as death_rate %}
+                                <div class="progress" style="height: 30px; width: 100px;">
+                                    <div class="progress-bar bg-danger" 
+                                         data-width="{{ death_rate }}"
+                                         title="{{ death_rate }}%">
+                                        <small>{{ death_rate }}%</small>
+                                    </div>
+                                </div>
+                            {% elif state.death_rate %}
+                                <div class="progress" style="height: 30px; width: 100px;">
+                                    <div class="progress-bar bg-danger" 
+                                         data-width="{{ state.death_rate|floatformat:0 }}"
+                                         title="{{ state.death_rate|floatformat:1 }}%">
+                                        <small>{{ state.death_rate|floatformat:1 }}%</small>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'tracker:search_state' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="state" value="{{ state.state }}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No data available. Please add some states through the admin panel.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card shadow-lg">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Visual Analytics
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="topStatesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="statusDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<script id="chart-data" type="application/json">
+{
+    "states": [
+        {% for state in states|slice:":5" %}
+        {
+            "state": "{{ state.state|escapejs }}",
+            "confirmed": {{ state.confirmed|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% empty %}
+        {% endfor %}
+    ],
+    "totals": {
+        "active": {{ totals.active|default:0 }},
+        "recovered": {{ totals.recovered|default:0 }},
+        "deaths": {{ totals.deaths|default:0 }}
+    }
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table th {
+        background-color: #495057;
+        color: white;
+        font-weight: 300;
+        border: none;
+    }
+    
+    .table td {
+        vertical-align: middle;
+        border-color: #dee2e6;
+        text-align: center;
+    }
+
+    .table tr {
+        text-align: center;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+    
+    .progress {
+        background-color: rgba(0,0,0,.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        font-size: 0.7em;
+        line-height: 20px;
+    }
+    
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.8em;
+    }
+    
+    .chart-container {
+        max-height: 300px;
+    }
+    
+    .card-header .btn-group .btn {
+        margin-left: 0.25rem;
+    }
+    
+    .loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    @media print {
+        .btn, .card-header .btn-group, .input-group, canvas, .chart-container { 
+            display: none !important; 
+        }
+        .card { 
+            border: 1px solid #ddd !important; 
+            box-shadow: none !important; 
+        }
+        body { 
+            background: white !important; 
+        }
+        .table { 
+            font-size: 12px; 
+        }
+        .badge {
+            background-color: #6c757d !important;
+            color: black !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .progress {
+            width: 60px !important;
+        }
+        .progress small {
+            display: none;
+        }
+        .chart-container {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<script>
+    // Global variables for charts
+    let topStatesChart = null;
+    let statusDistributionChart = null;
+    
+    // Get data from JSON script tag
+    const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+    
+    // Search functionality with debouncing
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.state-row');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const stateName = row.dataset.state;
+                if (stateName.includes(filter)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            updateRowNumbers();
+        }, 300);
+    });
+    
+    // Sort functionality with error handling
+    document.getElementById('sortSelect').addEventListener('change', function() {
+        const sortBy = this.value;
+        const tbody = document.querySelector('#statesTable tbody');
+        const rows = Array.from(tbody.querySelectorAll('.state-row'));
+        
+        if (rows.length === 0) return;
+        
+        try {
+            rows.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch(sortBy) {
+                    case 'confirmed':
+                        aVal = parseFloat(a.dataset.confirmed) || 0;
+                        bVal = parseFloat(b.dataset.confirmed) || 0;
+                        return bVal - aVal;
+                    case 'active':
+                        aVal = parseFloat(a.dataset.active) || 0;
+                        bVal = parseFloat(b.dataset.active) || 0;
+                        return bVal - aVal;
+                    case 'recovered':
+                        aVal = parseFloat(a.dataset.recovered) || 0;
+                        bVal = parseFloat(b.dataset.recovered) || 0;
+                        return bVal - aVal;
+                    case 'deaths':
+                        aVal = parseFloat(a.dataset.deaths) || 0;
+                        bVal = parseFloat(b.dataset.deaths) || 0;
+                        return bVal - aVal;
+                    case 'name':
+                        aVal = a.dataset.state || '';
+                        bVal = b.dataset.state || '';
+                        return aVal.localeCompare(bVal);
+                    default:
+                        return 0;
+                }
+            });
+            
+            rows.forEach(row => {
+                tbody.appendChild(row);
+            });
+            
+            updateRowNumbers();
+            
+        } catch (error) {
+            console.error('Error sorting table:', error);
+        }
+    });
+    
+    // Update row numbers for visible rows
+    function updateRowNumbers() {
+        const visibleRows = document.querySelectorAll('.state-row[style=""], .state-row:not([style])');
+        visibleRows.forEach((row, index) => {
+            row.cells[0].textContent = index + 1;
+        });
+    }
+    
+    // Export to CSV with error handling
+    function exportToCSV() {
+        try {
+            const table = document.getElementById('statesTable');
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.querySelectorAll('td, th');
+                let csvRow = [];
+                
+                for (let j = 0; j < cells.length - 1; j++) {
+                    let cellText = cells[j].textContent.trim();
+                    cellText = cellText.replace(/\s+/g, ' ');
+                    cellText = cellText.replace(/"/g, '""');
+                    csvRow.push('"' + cellText + '"');
+                }
+                
+                if (csvRow.length > 0) {
+                    csv.push(csvRow.join(','));
+                }
+            }
+            
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'covid19-states-data-' + new Date().toISOString().split('T')[0] + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            console.error('Error exporting CSV:', error);
+            alert('Error exporting data. Please try again.');
+        }
+    }
+    
+    // Chart.js charts with error handling
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set progress bar widths
+        document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+            const width = bar.getAttribute('data-width');
+            if (width && width !== '0') {
+                bar.style.width = width + '%';
+            } else {
+                bar.style.width = '0%';
+            }
+        });
+        
+        try {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded');
+                return;
+            }
+            
+            // Top 5 states by confirmed cases
+            if (chartData.states && chartData.states.length > 0) {
+                const ctx1 = document.getElementById('topStatesChart');
+                if (ctx1) {
+                    topStatesChart = new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: chartData.states.map(item => item.state),
+                            datasets: [{
+                                label: 'Confirmed Cases',
+                                data: chartData.states.map(item => item.confirmed),
+                                backgroundColor: [
+                                    'rgba(102, 126, 234, 0.8)',
+                                    'rgba(240, 147, 251, 0.8)',
+                                    'rgba(79, 172, 254, 0.8)',
+                                    'rgba(250, 112, 154, 0.8)',
+                                    'rgba(17, 153, 142, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(102, 126, 234, 1)',
+                                    'rgba(240, 147, 251, 1)',
+                                    'rgba(79, 172, 254, 1)',
+                                    'rgba(250, 112, 154, 1)',
+                                    'rgba(17, 153, 142, 1)'
+                                ],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Top 5 States by Confirmed Cases',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : 
+                                                   value >= 1000 ? (value/1000).toFixed(1) + 'K' : value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            // Status distribution pie chart
+            const totalActive = chartData.totals.active;
+            const totalRecovered = chartData.totals.recovered;
+            const totalDeaths = chartData.totals.deaths;
+            
+            if (totalActive > 0 || totalRecovered > 0 || totalDeaths > 0) {
+                const ctx2 = document.getElementById('statusDistributionChart');
+                if (ctx2) {
+                    statusDistributionChart = new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Active', 'Recovered', 'Deaths'],
+                            datasets: [{
+                                data: [totalActive, totalRecovered, totalDeaths],
+                                backgroundColor: [
+                                    'rgba(255, 193, 7, 0.8)',
+                                    'rgba(40, 167, 69, 0.8)',
+                                    'rgba(220, 53, 69, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 193, 7, 1)',
+                                    'rgba(40, 167, 69, 1)',
+                                    'rgba(220, 53, 69, 1)'
+                                ],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Overall Status Distribution',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                            return context.label + ': ' + context.parsed.toLocaleString() + ' (' + percentage + '%)';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error creating charts:', error);
+        }
+    });
+    
+    // Clean up charts on page unload
+    window.addEventListener('beforeunload', function() {
+        if (topStatesChart) {
+            topStatesChart.destroy();
+        }
+        if (statusDistributionChart) {
+            statusDistributionChart.destroy();
+        }
+    });
+</script>
+{% endblock %}

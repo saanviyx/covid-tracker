@@ -1,0 +1,214 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}COVID-19 Data - India State Wise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <h1 class="text-head">COVID-19 Data Tracker
+        </h1>
+        <p class="lead text-muted mb-5">Get real-time COVID-19 statistics for Indian states with interactive visualizations</p>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-6">
+        <div class="card shadow-lg">
+            <div class="card-body p-4">
+                <h4 class="card-title text-center mb-4">
+                    <i class="fas fa-search me-2 text-primary"></i>Search State Data
+                </h4>
+                
+                <form method="post" action="{% url 'tracker:search_state' %}" id="searchForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="state" class="form-label fw-semibold">Enter State Name:</label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="state" 
+                               name="state" 
+                               placeholder="e.g., Maharashtra, Kerala"
+                               list="statesList"
+                               required>
+                        
+                        <!-- Datalist for autocomplete -->
+                        <datalist id="statesList">
+                            {% for state in states %}
+                                <option value="{{ state.state }}">
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-chart-bar me-2"></i>Get COVID Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-info-circle me-2 text-info"></i>Quick Overview
+        </h3>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card h-100" style="background: linear-gradient(45deg, #e08de9, #9d30aa);">
+            <div class="card-body text-center">
+                <i class="fas fa-map-marked-alt fa-2x mb-3"></i>
+                <h4>{{ total_states }}</h4>
+                <p class="mb-0">States Available</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #008053, #86ffd3);">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-3"></i>
+                <h4>Real-time</h4>
+                <p class="mb-0">Data Updates</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #364caf, #879dff);">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-pie fa-2x mb-3"></i>
+                <h4>Interactive</h4>
+                <p class="mb-0">Visualizations</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card text-white h-100" style="background: linear-gradient(45deg, #ae1b1b, #da7979);">
+            <div class="card-body text-center">
+                <i class="fas fa-mobile-alt fa-2x mb-3"></i>
+                <h4>Mobile</h4>
+                <p class="mb-0">Responsive</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Available States -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Available States 
+                    <span class="badge bg-primary">{{ total_states }}</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for state in states %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+                            <a href="{% url 'tracker:search_state' %}" 
+                               class="text-decoration-none"
+                               onclick="fillStateForm('{{ state.state }}'); return false;">
+                                <div class="p-2 rounded bg-light hover-effect">
+                                    <i class="fas fa-map-pin me-2 text-primary"></i>
+                                    {{ state.state }}
+                                    <small class="text-muted d-block">
+                                        Confirmed: {{ state.confirmed|floatformat:2 }}
+                                    </small>
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center text-muted">
+                            <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                            <p>No data available. Please add some states through the admin panel.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i>How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-0">
+                        <div class="text-center">
+                            <i class="fas fa-search fa-3x text-info mb-3"></i>
+                            <h6>1. Search</h6>
+                            <p class="text-muted">Enter a state name in the search box above</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-0">
+                        <div class="text-center">
+                            <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                            <h6>2. View Data</h6>
+                            <p class="text-muted">Get detailed statistics and interactive charts</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-0">
+                        <div class="text-center">
+                            <i class="fas fa-download fa-3x text-warning mb-3"></i>
+                            <h6>3. Analyze</h6>
+                            <p class="text-muted">Compare recovery rates and trends</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-effect {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hover-effect:hover {
+        background-color: #e9ecef !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function fillStateForm(stateName) {
+        document.getElementById('state').value = stateName;
+        document.getElementById('searchForm').submit();
+    }
+    
+    // Add loading animation
+    document.getElementById('searchForm').addEventListener('submit', function() {
+        const button = this.querySelector('button[type="submit"]');
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+        button.disabled = true;
+    });
+    
+    // Auto-focus on the search input
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('state').focus();
+    });
+</script>
+{% endblock %}

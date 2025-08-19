@@ -1,0 +1,505 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}
+    {% if state_data %}COVID-19 Data - {{ state_data.state }}{% else %}Search Results{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-3">
+    <a href="{% url 'tracker:index' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Search
+    </a>
+</div>
+
+{% if error_message %}
+    <!-- Error Message -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>No Data Found!</strong> {{ error_message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Again Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Try Another Search</h5>
+                    <form method="post" action="{% url 'tracker:search_state' %}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="state" 
+                                   placeholder="Enter state name"
+                                   list="statesList"
+                                   value="{{ state|default:'' }}">
+                            
+                            <datalist id="statesList">
+                                {% for state in all_states %}
+                                    <option value="{{ state.state }}">
+                                {% endfor %}
+                            </datalist>
+                            
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% elif state_data %}
+    <!-- Success: Show State Data -->
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-map-marker-alt me-2"></i>{{ state_data.state }}
+            </h1>
+            <p class="lead text-muted">COVID-19 Statistics and Trends</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow gradient-card-1">
+                <div class="card-body text-white text-center">
+                    <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
+                    <h2 class="display-6 fw-bold">{{ state_data.confirmed|floatformat:2 }}</h2>
+                    <h5 class="mb-0">Total Confirmed</h5>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow gradient-card-2">
+                <div class="card-body text-white text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3 opacity-75"></i>
+                    <h2 class="display-6 fw-bold">{{ state_data.active|floatformat:2 }}</h2>
+                    <h5 class="mb-0">Active Cases</h5>
+                    <small class="opacity-75" data-rate="{{ state_data.active_rate|default:0 }}">{{ state_data.active_rate|default:0 }}% of total</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow gradient-card-3">
+                <div class="card-body text-white text-center">
+                    <i class="fas fa-heart fa-3x mb-3 opacity-75"></i>
+                    <h2 class="display-6 fw-bold">{{ state_data.recovered|floatformat:2 }}</h2>
+                    <h5 class="mb-0">Recovered</h5>
+                    <small class="opacity-75" data-rate="{{ state_data.recovery_rate|default:0 }}">{{ state_data.recovery_rate|default:0 }}% recovery rate</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow gradient-card-4">
+                <div class="card-body text-white text-center">
+                    <i class="fas fa-skull fa-3x mb-3 opacity-75"></i>
+                    <h2 class="display-6 fw-bold">{{ state_data.deaths|floatformat:2 }}</h2>
+                    <h5 class="mb-0">Deaths</h5>
+                    <small class="opacity-75" data-rate="{{ state_data.death_rate|default:0 }}">{{ state_data.death_rate|default:0 }}% mortality rate</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    {% if chart_image %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient text-white chart-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Visual Data Representation
+                    </h4>
+                </div>
+                <div class="card-body text-center p-4">
+                    <img src="data:image/png;base64,{{ chart_image }}" 
+                         class="img-fluid rounded shadow chart-image" 
+                         alt="COVID-19 Chart for {{ state_data.state }}"
+                         id="chartImage">
+                    
+                    <div class="mt-4">
+                        <button onclick="downloadChart()" class="btn btn-success me-2">
+                            <i class="fas fa-download me-2"></i>Download Chart
+                        </button>
+                        <button onclick="shareData()" class="btn btn-info">
+                            <i class="fas fa-share me-2"></i>Share Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Additional Information -->
+    <div class="row mt-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-percentage me-2"></i>Recovery Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Recovery Rate</label>
+                        <div class="progress progress-lg">
+                            <div class="progress-bar bg-success progress-recovery" 
+                                 data-width="{{ state_data.recovery_rate|default:0 }}"
+                                 title="{{ state_data.recovery_rate|default:0 }}%">
+                                {{ state_data.recovery_rate|default:0 }}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Active Cases Rate</label>
+                        <div class="progress progress-lg">
+                            <div class="progress-bar bg-warning progress-active" 
+                                 data-width="{{ state_data.active_rate|default:0 }}"
+                                 title="{{ state_data.active_rate|default:0 }}%">
+                                {{ state_data.active_rate|default:0 }}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mortality Rate</label>
+                        <div class="progress progress-lg">
+                            <div class="progress-bar bg-danger progress-mortality" 
+                                 data-width="{{ state_data.death_rate|default:0 }}"
+                                 title="{{ state_data.death_rate|default:0 }}%">
+                                {{ state_data.death_rate|default:0 }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-4">
+                        <a href="{% url 'tracker:all_states' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>View All States Data
+                        </a>
+                        
+                        <button onclick="window.print()" class="btn btn-outline-secondary">
+                            <i class="fas fa-print me-2"></i>Print This Report
+                        </button>
+                        
+                        {% if state_data.state %}
+                        <a href="{% url 'tracker:api_state_data' state_data.state %}" 
+                           target="_blank" class="btn btn-outline-info">
+                            <i class="fas fa-code me-2"></i>Get JSON Data
+                        </a>
+                        {% endif %}
+                        
+                        <button onclick="location.reload()" class="btn btn-outline-success">
+                            <i class="fas fa-sync me-2"></i>Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+    <!-- No Search Performed -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <i class="fas fa-search fa-5x text-muted mb-4"></i>
+            <h3>Search for COVID-19 Data</h3>
+            <p class="lead text-muted mb-4">Enter a state name to view detailed COVID-19 statistics and charts.</p>
+            
+            <form method="post" action="{% url 'tracker:search_state' %}" class="mx-auto" style="max-width: 400px;">
+                {% csrf_token %}
+                <div class="input-group input-group-lg">
+                    <input type="text" 
+                           class="form-control" 
+                           name="state" 
+                           placeholder="Enter state name"
+                           list="statesList">
+                    
+                    <datalist id="statesList">
+                        {% for state in all_states %}
+                            <option value="{{ state.state }}">
+                        {% endfor %}
+                    </datalist>
+                    
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Hidden data for JavaScript -->
+{% if state_data %}
+<script id="state-data" type="application/json">
+{
+    "state": "{{ state_data.state|escapejs }}",
+    "chart_image": {% if chart_image %}"{{ chart_image }}"{% else %}null{% endif %},
+    "recovery_rate": {{ state_data.recovery_rate|default:0 }},
+    "active_rate": {{ state_data.active_rate|default:0 }},
+    "death_rate": {{ state_data.death_rate|default:0 }}
+}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gradient-card-1 {
+        background: linear-gradient(45deg, #008053, #86ffd3);
+    }
+    
+    .gradient-card-2 {
+        background: linear-gradient(45deg, #e08de9, #9d30aa);
+    }
+    
+    .gradient-card-3 {
+        background: linear-gradient(45deg, #364caf, #879dff);
+    }
+    
+    .gradient-card-4 {
+        background: linear-gradient(45deg, #ae1b1b, #da7979);
+    }
+    
+    .chart-header {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+    
+    .progress-lg {
+        height: 25px;
+    }
+    
+    .chart-image {
+        max-width: 100%; 
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+    
+    .chart-image:hover {
+        transform: scale(1.02);
+    }
+    
+    .progress-bar {
+        transition: width 0.6s ease;
+        font-size: 0.9em;
+        line-height: 25px;
+    }
+    
+    @media print {
+        .btn, .card-header, nav, footer { 
+            display: none !important; 
+        }
+        .card { 
+            border: 1px solid #ddd !important; 
+            box-shadow: none !important; 
+        }
+        body { 
+            background: white !important; 
+        }
+        .gradient-card-1,
+        .gradient-card-2,
+        .gradient-card-3,
+        .gradient-card-4 {
+            background: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .text-white {
+            color: #000 !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .progress-lg {
+            height: 20px;
+        }
+        
+        .progress-bar {
+            font-size: 0.8em;
+            line-height: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Declare variables globally to avoid redeclaration errors
+    let stateDataGlobal = null;
+    
+    // Initialize state data from JSON script tag
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if state data exists and parse it
+        const stateDataScript = document.getElementById('state-data');
+        if (stateDataScript) {
+            try {
+                stateDataGlobal = JSON.parse(stateDataScript.textContent);
+            } catch (error) {
+                console.error('Error parsing state data:', error);
+            }
+        }
+        
+        // Set progress bar widths
+        document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+            const width = parseFloat(bar.getAttribute('data-width')) || 0;
+            // Ensure width doesn't exceed 100%
+            const safeWidth = Math.min(Math.max(width, 0), 100);
+            bar.style.width = safeWidth + '%';
+        });
+        
+        // Add animation delay for visual effect
+        setTimeout(function() {
+            document.querySelectorAll('.progress-bar').forEach(function(bar, index) {
+                bar.style.animationDelay = (float(index) * 0.2) + 's';
+            });
+    // Form validation - moved inside DOMContentLoaded
+    document.querySelectorAll('form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const input = form.querySelector('input[name="state"]');
+            if (input && input.value.trim() === '') {
+                e.preventDefault();
+                input.focus();
+                showNotification('Please enter a state name');
+            }
+        });
+    });
+});
+        if (stateDataGlobal && stateDataGlobal.chart_image) {
+            try {
+                const link = document.createElement('a');
+                link.href = 'data:image/png;base64,' + stateDataGlobal.chart_image;
+                link.download = 'covid-19-' + stateDataGlobal.state.toLowerCase().replace(/\s+/g, '-') + '-chart.png';
+                document.body.appendChild(link);
+            } catch (error) {
+                console.error('Error downloading chart:', error);
+                alert('Error downloading chart. Please try again.');
+            }
+        } else {
+            alert('No chart available to download.');
+        }
+    })
+    
+    function shareData() {
+        if (stateDataGlobal) {
+            const shareText = 'Check out the latest COVID-19 statistics for ' + stateDataGlobal.state;
+            const shareTitle = 'COVID-19 Data for ' + stateDataGlobal.state;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: window.location.href
+                }).catch((error) => {
+                    console.log('Error sharing:', error);
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+        }
+    }
+    
+    function fallbackShare() {
+        // Fallback: copy URL to clipboard
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('Link copied to clipboard!');
+            }).catch(() => {
+                // Final fallback
+                promptCopyURL();
+            });
+        } else {
+            promptCopyURL();
+        }
+    }
+    
+    function promptCopyURL() {
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showNotification('Link copied to clipboard!');
+        } catch (err) {
+            console.error('Could not copy text: ', err);
+            alert('Unable to copy link. Please copy manually: ' + window.location.href);
+        }
+        
+        document.body.removeChild(textArea);
+    }
+    
+    function showNotification(message) {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success position-fixed';
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+        notification.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + message;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+    
+    // Form validation
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                const input = form.querySelector('input[name="state"]');
+                if (input && input.value.trim() === '') {
+                    e.preventDefault();
+                    input.focus();
+                    showNotification('Please enter a state name');
+                }
+            });
+        });
+    });
+    
+    // Auto-refresh functionality (optional)
+    function setupAutoRefresh() {
+        const refreshInterval = 5 * 60 * 1000; // 5 minutes
+        setTimeout(function() {
+            if (confirm('Data may be outdated. Would you like to refresh?')) {
+                location.reload();
+            }
+        }, refreshInterval);
+    }
+    
+    // Uncomment the line below if you want auto-refresh
+    // setupAutoRefresh();
+</script>
+{% endblock %}
