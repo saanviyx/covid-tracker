@@ -28,8 +28,10 @@
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Try Another Search</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Try Another Search</h5>
                     <form method="post" action="{% url 'tracker:search_state' %}">
                         {% csrf_token %}
                         <div class="input-group">
@@ -60,7 +62,7 @@
     <!-- Success: Show State Data -->
     <div class="row">
         <div class="col-12 text-center mb-4">
-            <h1 class="display-5 fw-bold text-primary">
+            <h1 class="text-primary fw-bold mb-3">
                 <i class="fas fa-map-marker-alt me-2"></i>{{ state_data.state }}
             </h1>
             <p class="lead text-muted">COVID-19 Statistics and Trends</p>
@@ -70,20 +72,20 @@
     <!-- Statistics Cards -->
     <div class="row mb-5">
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-0 shadow gradient-card-1">
-                <div class="card-body text-white text-center">
-                    <i class="fas fa-users fa-3x mb-3 opacity-75"></i>
-                    <h2 class="display-6 fw-bold">{{ state_data.confirmed|floatformat:2 }}</h2>
+            <div class="card h-100 text-center" style="background-color: var(--light-blue); border-color: var(--secondary-blue); color: var(--primary-blue);">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h2 class="fw-bold">{{ state_data.confirmed|floatformat:2 }}</h2>
                     <h5 class="mb-0">Total Confirmed</h5>
                 </div>
             </div>
         </div>
         
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-0 shadow gradient-card-2">
-                <div class="card-body text-white text-center">
-                    <i class="fas fa-exclamation-triangle fa-3x mb-3 opacity-75"></i>
-                    <h2 class="display-6 fw-bold">{{ state_data.active|floatformat:2 }}</h2>
+            <div class="card h-100 text-center" style="background-color: #fef3c7; border-color: #f59e0b; color: #92400e;">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                    <h2 class="fw-bold">{{ state_data.active|floatformat:2 }}</h2>
                     <h5 class="mb-0">Active Cases</h5>
                     <small class="opacity-75" data-rate="{{ state_data.active_rate|default:0 }}">{{ state_data.active_rate|default:0 }}% of total</small>
                 </div>
@@ -91,10 +93,10 @@
         </div>
         
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-0 shadow gradient-card-3">
-                <div class="card-body text-white text-center">
-                    <i class="fas fa-heart fa-3x mb-3 opacity-75"></i>
-                    <h2 class="display-6 fw-bold">{{ state_data.recovered|floatformat:2 }}</h2>
+            <div class="card h-100 text-center" style="background-color: #dcfce7; border-color: #16a34a; color: #166534;">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-3x mb-3"></i>
+                    <h2 class="fw-bold">{{ state_data.recovered|floatformat:2 }}</h2>
                     <h5 class="mb-0">Recovered</h5>
                     <small class="opacity-75" data-rate="{{ state_data.recovery_rate|default:0 }}">{{ state_data.recovery_rate|default:0 }}% recovery rate</small>
                 </div>
@@ -102,10 +104,10 @@
         </div>
         
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card h-100 border-0 shadow gradient-card-4">
-                <div class="card-body text-white text-center">
-                    <i class="fas fa-skull fa-3x mb-3 opacity-75"></i>
-                    <h2 class="display-6 fw-bold">{{ state_data.deaths|floatformat:2 }}</h2>
+            <div class="card h-100 text-center" style="background-color: #fee2e2; border-color: #dc2626; color: #991b1b;">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-circle fa-3x mb-3"></i>
+                    <h2 class="fw-bold">{{ state_data.deaths|floatformat:2 }}</h2>
                     <h5 class="mb-0">Deaths</h5>
                     <small class="opacity-75" data-rate="{{ state_data.death_rate|default:0 }}">{{ state_data.death_rate|default:0 }}% mortality rate</small>
                 </div>
@@ -117,23 +119,25 @@
     {% if chart_image %}
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-lg">
-                <div class="card-header bg-gradient text-white chart-header">
+            <div class="card">
+                <div class="card-header">
                     <h4 class="mb-0">
                         <i class="fas fa-chart-bar me-2"></i>Visual Data Representation
                     </h4>
                 </div>
                 <div class="card-body text-center p-4">
-                    <img src="data:image/png;base64,{{ chart_image }}" 
-                         class="img-fluid rounded shadow chart-image" 
-                         alt="COVID-19 Chart for {{ state_data.state }}"
-                         id="chartImage">
+                    <div class="chart-wrapper" style="border: 2px solid var(--border-color); border-radius: 8px; padding: 20px; background-color: var(--white);">
+                        <img src="data:image/png;base64,{{ chart_image }}" 
+                             class="img-fluid rounded chart-image" 
+                             alt="COVID-19 Chart for {{ state_data.state }}"
+                             id="chartImage">
+                    </div>
                     
                     <div class="mt-4">
-                        <button onclick="downloadChart()" class="btn btn-success me-2">
+                        <button onclick="downloadChart()" class="btn btn-outline-success me-2">
                             <i class="fas fa-download me-2"></i>Download Chart
                         </button>
-                        <button onclick="shareData()" class="btn btn-info">
+                        <button onclick="shareData()" class="btn btn-outline-info">
                             <i class="fas fa-share me-2"></i>Share Data
                         </button>
                     </div>
@@ -145,18 +149,19 @@
 
     <!-- Additional Information -->
     <div class="row mt-5">
-        <div class="col-lg-6">
+        <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-info text-white">
+                <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-percentage me-2"></i>Recovery Analysis
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Recovery Rate</label>
-                        <div class="progress progress-lg">
-                            <div class="progress-bar bg-success progress-recovery" 
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-primary">Recovery Rate</label>
+                        <div class="progress" style="height: 25px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                            <div class="progress-bar progress-recovery" 
+                                 style="background-color: #16a34a; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;"
                                  data-width="{{ state_data.recovery_rate|default:0 }}"
                                  title="{{ state_data.recovery_rate|default:0 }}%">
                                 {{ state_data.recovery_rate|default:0 }}%
@@ -164,10 +169,11 @@
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Active Cases Rate</label>
-                        <div class="progress progress-lg">
-                            <div class="progress-bar bg-warning progress-active" 
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color: #f59e0b;">Active Cases Rate</label>
+                        <div class="progress" style="height: 25px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                            <div class="progress-bar progress-active" 
+                                 style="background-color: #f59e0b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;"
                                  data-width="{{ state_data.active_rate|default:0 }}"
                                  title="{{ state_data.active_rate|default:0 }}%">
                                 {{ state_data.active_rate|default:0 }}%
@@ -176,9 +182,10 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Mortality Rate</label>
-                        <div class="progress progress-lg">
-                            <div class="progress-bar bg-danger progress-mortality" 
+                        <label class="form-label fw-semibold" style="color: #dc2626;">Mortality Rate</label>
+                        <div class="progress" style="height: 25px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                            <div class="progress-bar progress-mortality" 
+                                 style="background-color: #dc2626; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;"
                                  data-width="{{ state_data.death_rate|default:0 }}"
                                  title="{{ state_data.death_rate|default:0 }}%">
                                 {{ state_data.death_rate|default:0 }}%
@@ -189,15 +196,15 @@
             </div>
         </div>
         
-        <div class="col-lg-6">
+        <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-secondary text-white">
+                <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-info-circle me-2"></i>Quick Actions
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-grid gap-4">
+                    <div class="d-grid gap-3">
                         <a href="{% url 'tracker:all_states' %}" class="btn btn-outline-primary">
                             <i class="fas fa-list me-2"></i>View All States Data
                         </a>
@@ -226,30 +233,34 @@
     <!-- No Search Performed -->
     <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-            <i class="fas fa-search fa-5x text-muted mb-4"></i>
-            <h3>Search for COVID-19 Data</h3>
-            <p class="lead text-muted mb-4">Enter a state name to view detailed COVID-19 statistics and charts.</p>
-            
-            <form method="post" action="{% url 'tracker:search_state' %}" class="mx-auto" style="max-width: 400px;">
-                {% csrf_token %}
-                <div class="input-group input-group-lg">
-                    <input type="text" 
-                           class="form-control" 
-                           name="state" 
-                           placeholder="Enter state name"
-                           list="statesList">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-search fa-5x text-primary mb-4"></i>
+                    <h3 class="text-primary mb-3">Search for COVID-19 Data</h3>
+                    <p class="lead text-muted mb-4">Enter a state name to view detailed COVID-19 statistics and charts.</p>
                     
-                    <datalist id="statesList">
-                        {% for state in all_states %}
-                            <option value="{{ state.state }}">
-                        {% endfor %}
-                    </datalist>
-                    
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
+                    <form method="post" action="{% url 'tracker:search_state' %}" class="mx-auto" style="max-width: 400px;">
+                        {% csrf_token %}
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="state" 
+                                   placeholder="Enter state name"
+                                   list="statesList">
+                            
+                            <datalist id="statesList">
+                                {% for state in all_states %}
+                                    <option value="{{ state.state }}">
+                                {% endfor %}
+                            </datalist>
+                            
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 {% endif %}
@@ -270,44 +281,39 @@
 
 {% block extra_css %}
 <style>
-    .gradient-card-1 {
-        background: linear-gradient(45deg, #008053, #86ffd3);
-    }
-    
-    .gradient-card-2 {
-        background: linear-gradient(45deg, #e08de9, #9d30aa);
-    }
-    
-    .gradient-card-3 {
-        background: linear-gradient(45deg, #364caf, #879dff);
-    }
-    
-    .gradient-card-4 {
-        background: linear-gradient(45deg, #ae1b1b, #da7979);
-    }
-    
-    .chart-header {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-    }
-    
-    .progress-lg {
-        height: 25px;
-    }
-    
     .chart-image {
         max-width: 100%; 
         height: auto;
         transition: transform 0.3s ease;
+        border-radius: 6px;
     }
     
     .chart-image:hover {
         transform: scale(1.02);
+    }
+
+    .chart-wrapper {
+        background-color: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
     }
     
     .progress-bar {
         transition: width 0.6s ease;
         font-size: 0.9em;
         line-height: 25px;
+        border-radius: 6px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
     }
     
     @media print {
@@ -321,14 +327,8 @@
         body { 
             background: white !important; 
         }
-        .gradient-card-1,
-        .gradient-card-2,
-        .gradient-card-3,
-        .gradient-card-4 {
+        .card[style*="background-color"] {
             background: #f8f9fa !important;
-            color: #000 !important;
-        }
-        .text-white {
             color: #000 !important;
         }
     }
@@ -338,8 +338,8 @@
             font-size: 1.5rem;
         }
         
-        .progress-lg {
-            height: 20px;
+        .progress {
+            height: 20px !important;
         }
         
         .progress-bar {
@@ -378,26 +378,21 @@
         // Add animation delay for visual effect
         setTimeout(function() {
             document.querySelectorAll('.progress-bar').forEach(function(bar, index) {
-                bar.style.animationDelay = (float(index) * 0.2) + 's';
+                bar.style.animationDelay = (index * 0.2) + 's';
             });
-    // Form validation - moved inside DOMContentLoaded
-    document.querySelectorAll('form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            const input = form.querySelector('input[name="state"]');
-            if (input && input.value.trim() === '') {
-                e.preventDefault();
-                input.focus();
-                showNotification('Please enter a state name');
-            }
-        });
+        }, 100);
     });
-});
+
+    function downloadChart() {
         if (stateDataGlobal && stateDataGlobal.chart_image) {
             try {
                 const link = document.createElement('a');
                 link.href = 'data:image/png;base64,' + stateDataGlobal.chart_image;
                 link.download = 'covid-19-' + stateDataGlobal.state.toLowerCase().replace(/\s+/g, '-') + '-chart.png';
                 document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showNotification('Chart downloaded successfully!');
             } catch (error) {
                 console.error('Error downloading chart:', error);
                 alert('Error downloading chart. Please try again.');
@@ -405,7 +400,7 @@
         } else {
             alert('No chart available to download.');
         }
-    })
+    }
     
     function shareData() {
         if (stateDataGlobal) {
@@ -459,10 +454,21 @@
     }
     
     function showNotification(message) {
-        // Create a simple notification
+        // Create a simple notification with blue theme
         const notification = document.createElement('div');
-        notification.className = 'alert alert-success position-fixed';
-        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+        notification.className = 'alert position-fixed';
+        notification.style.cssText = `
+            top: 20px; 
+            right: 20px; 
+            z-index: 9999; 
+            min-width: 250px;
+            background-color: var(--light-blue);
+            border: 2px solid var(--secondary-blue);
+            color: var(--primary-blue);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 500;
+        `;
         notification.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + message;
         
         document.body.appendChild(notification);

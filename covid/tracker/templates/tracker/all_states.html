@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row">
     <div class="col-12 text-center mb-4">
-        <h1 class="display-5 fw-bold text-primary">
+        <h1 class="text-head mb-3">
             <i class="fas fa-flag me-2"></i>All States Data
         </h1>
         <p class="lead text-muted">Complete COVID-19 statistics for all Indian states</p>
@@ -15,41 +15,41 @@
 <!-- Summary Cards -->
 <div class="row mb-5">
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #667eea, #764ba2);">
-            <div class="card-body text-center">
+        <div class="card text-center h-100" style="background-color: var(--light-blue); border-color: var(--secondary-blue); color: var(--primary-blue);">
+            <div class="card-body">
                 <i class="fas fa-users fa-2x mb-3"></i>
                 <h3>{{ totals.confirmed|floatformat:2 }}</h3>
-                <p class="mb-0">Total Confirmed</p>
+                <p class="mb-0 fw-semibold">Total Confirmed</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #e08de9, #9d30aa);">
-            <div class="card-body text-center">
+        <div class="card text-center h-100" style="background-color: #fef3c7; border-color: #f59e0b; color: #92400e;">
+            <div class="card-body">
                 <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
                 <h3>{{ totals.active|floatformat:2 }}</h3>
-                <p class="mb-0">Total Active</p>
+                <p class="mb-0 fw-semibold">Total Active</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #4facfe, #00f2fe);">
-            <div class="card-body text-center">
+        <div class="card text-center h-100" style="background-color: #dcfce7; border-color: #16a34a; color: #166534;">
+            <div class="card-body">
                 <i class="fas fa-heart fa-2x mb-3"></i>
                 <h3>{{ totals.recovered|floatformat:2 }}</h3>
-                <p class="mb-0">Total Recovered</p>
+                <p class="mb-0 fw-semibold">Total Recovered</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #fa709a, #fee140);">
-            <div class="card-body text-center">
+        <div class="card text-center h-100" style="background-color: #fee2e2; border-color: #dc2626; color: #991b1b;">
+            <div class="card-body">
                 <i class="fas fa-skull fa-2x mb-3"></i>
                 <h3>{{ totals.deaths|floatformat:2 }}</h3>
-                <p class="mb-0">Total Deaths</p>
+                <p class="mb-0 fw-semibold">Total Deaths</p>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
 
 <!-- Filter and Search -->
 <div class="row mb-4">
-    <div class="col-lg-6">
+    <div class="col-lg-6 mb-3">
         <div class="input-group">
             <span class="input-group-text">
                 <i class="fas fa-search"></i>
@@ -65,7 +65,7 @@
             <input type="text" id="searchInput" class="form-control" placeholder="Search states...">
         </div>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-6 mb-3">
         <div class="input-group">
             <span class="input-group-text">
                 <i class="fas fa-sort"></i>
@@ -82,25 +82,24 @@
 </div>
 
 <!-- States Table -->
-<div class="card shadow-lg">
-    <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center" 
-         style="background: linear-gradient(45deg, #667eea, #764ba2);">
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0">
             <i class="fas fa-table me-2"></i>State-wise Data
         </h4>
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-light btn-sm" onclick="exportToCSV()">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="exportToCSV()">
                 <i class="fas fa-download me-1"></i>Export CSV
             </button>
-            <button type="button" class="btn btn-light btn-sm" onclick="window.print()">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
                 <i class="fas fa-print me-1"></i>Print
             </button>
         </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0" id="statesTable" style="vertical-align: middle;">
-                <thead class="table-dark">
+            <table class="table table-hover mb-0" id="statesTable">
+                <thead style="background-color: var(--light-blue); color: var(--primary-blue);">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">State Name</th>
@@ -121,39 +120,49 @@
                         data-active="{{ state.active|default:0 }}" 
                         data-recovered="{{ state.recovered|default:0 }}" 
                         data-deaths="{{ state.deaths|default:0 }}">
-                        <td class="fw-bold">{{ forloop.counter }}</td>
+                        <td class="fw-bold text-center">{{ forloop.counter }}</td>
                         <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-map-pin text-primary me-2"></i>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-pin me-2" style="color: var(--primary-blue);"></i>
                                 <strong>{{ state.state }}</strong>
                             </div>
                         </td>
-                        <td>
-                            <span class="badge bg-primary fs-7">{{ state.confirmed|floatformat:2 }}</span>
+                        <td class="text-center">
+                            <span class="badge rounded-pill" style="background-color: var(--primary-blue); color: var(--white); padding: 6px 12px;">
+                                {{ state.confirmed|floatformat:2 }}
+                            </span>
                         </td>
-                        <td>
-                            <span class="badge bg-warning fs-7">{{ state.active|floatformat:2 }}</span>
+                        <td class="text-center">
+                            <span class="badge rounded-pill" style="background-color: #f59e0b; color: white; padding: 6px 12px;">
+                                {{ state.active|floatformat:2 }}
+                            </span>
                         </td>
-                        <td>
-                            <span class="badge bg-success fs-7">{{ state.recovered|floatformat:2 }}</span>
+                        <td class="text-center">
+                            <span class="badge rounded-pill" style="background-color: #16a34a; color: white; padding: 6px 12px;">
+                                {{ state.recovered|floatformat:2 }}
+                            </span>
                         </td>
-                        <td>
-                            <span class="badge bg-danger fs-7">{{ state.deaths|floatformat:2 }}</span>
+                        <td class="text-center">
+                            <span class="badge rounded-pill" style="background-color: #dc2626; color: white; padding: 6px 12px;">
+                                {{ state.deaths|floatformat:2 }}
+                            </span>
                         </td>
-                        <td>
+                        <td class="text-center">
                             {% if state.confirmed and state.confirmed > 0 and state.recovered %}
                                 {% widthratio state.recovered state.confirmed 100 as recovery_rate %}
-                                <div class="progress" style="height: 30px; width: 100px;">
-                                    <div class="progress-bar bg-success justify-content-center" 
+                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
+                                         style="background-color: #16a34a; color: white;"
                                          data-width="{{ recovery_rate }}"
                                          title="{{ recovery_rate }}%">
                                         <small>{{ recovery_rate }}%</small>
                                     </div>
                                 </div>
                             {% elif state.recovery_rate %}
-                                <div class="progress" style="height: 30px; width: 100px;">
-                                    <div class="progress-bar bg-success" 
-                                         data-width="{{ state.recovery_rate|floatformat:0 }}"
+                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
+                                         style="background-color: #16a34a; color: white;" 
+                                         data-width="{{ state.recovery_rate|floatformat:0 }};"
                                          title="{{ state.recovery_rate|floatformat:1 }}%">
                                         <small>{{ state.recovery_rate|floatformat:1 }}%</small>
                                     </div>
@@ -162,19 +171,21 @@
                                 <span class="text-muted">N/A</span>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-center">
                             {% if state.confirmed and state.confirmed > 0 and state.deaths %}
                                 {% widthratio state.deaths state.confirmed 100 as death_rate %}
-                                <div class="progress" style="height: 30px; width: 100px;">
-                                    <div class="progress-bar bg-danger" 
+                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
+                                         style="background-color: #dc2626; color: white;"
                                          data-width="{{ death_rate }}"
                                          title="{{ death_rate }}%">
                                         <small>{{ death_rate }}%</small>
                                     </div>
                                 </div>
                             {% elif state.death_rate %}
-                                <div class="progress" style="height: 30px; width: 100px;">
-                                    <div class="progress-bar bg-danger" 
+                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
+                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
+                                         style="background-color: #dc2626; color: white;"
                                          data-width="{{ state.death_rate|floatformat:0 }}"
                                          title="{{ state.death_rate|floatformat:1 }}%">
                                         <small>{{ state.death_rate|floatformat:1 }}%</small>
@@ -184,11 +195,11 @@
                                 <span class="text-muted">N/A</span>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-center">
                             <form method="post" action="{% url 'tracker:search_state' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="state" value="{{ state.state }}">
-                                <button type="submit" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <button type="submit" class="btn btn-outline-primary btn-sm" title="View Details">
                                     <i class="fas fa-chart-bar"></i>
                                 </button>
                             </form>
@@ -196,7 +207,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center py-4">
+                        <td colspan="9" class="text-center py-5">
                             <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
                             <p class="text-muted">No data available. Please add some states through the admin panel.</p>
                         </td>
@@ -211,8 +222,8 @@
 <!-- Charts Section -->
 <div class="row mt-5">
     <div class="col-12">
-        <div class="card shadow-lg">
-            <div class="card-header bg-info text-white">
+        <div class="card">
+            <div class="card-header">
                 <h4 class="mb-0">
                     <i class="fas fa-chart-pie me-2"></i>Visual Analytics
                 </h4>
@@ -220,12 +231,12 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-6 mb-4">
-                        <div class="chart-container" style="position: relative; height: 300px;">
+                        <div class="chart-container" style="position: relative; height: 300px; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 8px; padding: 20px;">
                             <canvas id="topStatesChart"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-6 mb-4">
-                        <div class="chart-container" style="position: relative; height: 300px;">
+                        <div class="chart-container" style="position: relative; height: 300px; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 8px; padding: 20px;">
                             <canvas id="statusDistributionChart"></canvas>
                         </div>
                     </div>
@@ -258,54 +269,80 @@
 
 {% block extra_css %}
 <style>
+    .table {
+        vertical-align: middle;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--white);
+    }
+    
     .table th {
-        background-color: #495057;
-        color: white;
-        font-weight: 300;
+        font-weight: 600;
         border: none;
+        padding: 16px 12px;
+        text-align: center;
     }
     
     .table td {
         vertical-align: middle;
-        border-color: #dee2e6;
-        text-align: center;
-    }
-
-    .table tr {
-        text-align: center;
+        border-color: var(--border-color);
+        padding: 12px;
     }
 
     .table-hover tbody tr:hover {
-        background-color: rgba(102, 126, 234, 0.1);
+        background-color: rgba(59, 130, 246, 0.05);
     }
     
     .progress {
-        background-color: rgba(0,0,0,.1);
-        border-radius: 10px;
+        background-color: #f1f5f9;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
         overflow: hidden;
     }
     
     .progress-bar {
-        font-size: 0.7em;
-        line-height: 20px;
+        font-size: 0.75em;
+        line-height: 1;
+        transition: width 0.6s ease;
+        border-radius: 6px;
     }
     
     .badge {
         font-size: 0.85em;
-        padding: 0.5em 0.8em;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
     }
     
     .chart-container {
         max-height: 300px;
+        background-color: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
     }
     
-    .card-header .btn-group .btn {
+    .btn-group .btn {
         margin-left: 0.25rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
     }
     
     .loading {
         opacity: 0.5;
         pointer-events: none;
+    }
+    
+    .input-group-text {
+        background-color: var(--light-blue);
+        border: 2px solid var(--border-color);
+        color: var(--primary-blue);
+        font-weight: 500;
     }
     
     @media print {
@@ -331,12 +368,17 @@
     @media (max-width: 768px) {
         .progress {
             width: 60px !important;
+            height: 20px !important;
         }
         .progress small {
-            display: none;
+            font-size: 0.7em;
         }
         .chart-container {
             height: 250px;
+        }
+        .badge {
+            font-size: 0.75em;
+            padding: 4px 8px;
         }
     }
 </style>
@@ -377,7 +419,7 @@
         }, 300);
     });
     
-    // Sort functionality with error handling
+    // Sort functionality
     document.getElementById('sortSelect').addEventListener('change', function() {
         const sortBy = this.value;
         const tbody = document.querySelector('#statesTable tbody');
@@ -423,6 +465,7 @@
             
         } catch (error) {
             console.error('Error sorting table:', error);
+            showNotification('Error sorting data. Please try again.', 'error');
         }
     });
     
@@ -434,7 +477,7 @@
         });
     }
     
-    // Export to CSV with error handling
+    // Export to CSV
     function exportToCSV() {
         try {
             const table = document.getElementById('statesTable');
@@ -471,25 +514,49 @@
             document.body.removeChild(link);
             
             URL.revokeObjectURL(url);
+            showNotification('CSV file downloaded successfully!', 'success');
             
         } catch (error) {
             console.error('Error exporting CSV:', error);
-            alert('Error exporting data. Please try again.');
+            showNotification('Error exporting data. Please try again.', 'error');
         }
     }
     
-    // Chart.js charts with error handling
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set progress bar widths
-        document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
-            const width = bar.getAttribute('data-width');
-            if (width && width !== '0') {
-                bar.style.width = width + '%';
-            } else {
-                bar.style.width = '0%';
-            }
-        });
+    // Notification function
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = 'alert position-fixed';
         
+        const bgColor = type === 'success' ? 'var(--light-blue)' : '#fee2e2';
+        const borderColor = type === 'success' ? 'var(--secondary-blue)' : '#dc2626';
+        const textColor = type === 'success' ? 'var(--primary-blue)' : '#991b1b';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        notification.style.cssText = `
+            top: 20px; 
+            right: 20px; 
+            z-index: 9999; 
+            min-width: 250px;
+            background-color: ${bgColor};
+            border: 2px solid ${borderColor};
+            color: ${textColor};
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 500;
+        `;
+        notification.innerHTML = `<i class="fas ${icon} me-2"></i>${message}`;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+    
+    // Chart.js initialization
+    document.addEventListener('DOMContentLoaded', function() {
         try {
             if (typeof Chart === 'undefined') {
                 console.error('Chart.js is not loaded');
@@ -508,20 +575,21 @@
                                 label: 'Confirmed Cases',
                                 data: chartData.states.map(item => item.confirmed),
                                 backgroundColor: [
-                                    'rgba(102, 126, 234, 0.8)',
-                                    'rgba(240, 147, 251, 0.8)',
-                                    'rgba(79, 172, 254, 0.8)',
-                                    'rgba(250, 112, 154, 0.8)',
-                                    'rgba(17, 153, 142, 0.8)'
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(245, 158, 11, 0.8)',
+                                    'rgba(22, 163, 74, 0.8)',
+                                    'rgba(220, 38, 38, 0.8)',
+                                    'rgba(147, 51, 234, 0.8)'
                                 ],
                                 borderColor: [
-                                    'rgba(102, 126, 234, 1)',
-                                    'rgba(240, 147, 251, 1)',
-                                    'rgba(79, 172, 254, 1)',
-                                    'rgba(250, 112, 154, 1)',
-                                    'rgba(17, 153, 142, 1)'
+                                    'rgba(59, 130, 246, 1)',
+                                    'rgba(245, 158, 11, 1)',
+                                    'rgba(22, 163, 74, 1)',
+                                    'rgba(220, 38, 38, 1)',
+                                    'rgba(147, 51, 234, 1)'
                                 ],
-                                borderWidth: 2
+                                borderWidth: 2,
+                                borderRadius: 6
                             }]
                         },
                         options: {
@@ -532,8 +600,10 @@
                                     display: true,
                                     text: 'Top 5 States by Confirmed Cases',
                                     font: {
-                                        size: 16
-                                    }
+                                        size: 16,
+                                        weight: 600
+                                    },
+                                    color: 'var(--primary-blue)'
                                 },
                                 legend: {
                                     display: false
@@ -546,7 +616,19 @@
                                         callback: function(value) {
                                             return value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : 
                                                    value >= 1000 ? (value/1000).toFixed(1) + 'K' : value;
-                                        }
+                                        },
+                                        color: 'var(--text-muted)'
+                                    },
+                                    grid: {
+                                        color: 'var(--border-color)'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: 'var(--text-muted)'
+                                    },
+                                    grid: {
+                                        color: 'var(--border-color)'
                                     }
                                 }
                             }
@@ -570,14 +652,14 @@
                             datasets: [{
                                 data: [totalActive, totalRecovered, totalDeaths],
                                 backgroundColor: [
-                                    'rgba(255, 193, 7, 0.8)',
-                                    'rgba(40, 167, 69, 0.8)',
-                                    'rgba(220, 53, 69, 0.8)'
+                                    'rgba(245, 158, 11, 0.8)',
+                                    'rgba(22, 163, 74, 0.8)',
+                                    'rgba(220, 38, 38, 0.8)'
                                 ],
                                 borderColor: [
-                                    'rgba(255, 193, 7, 1)',
-                                    'rgba(40, 167, 69, 1)',
-                                    'rgba(220, 53, 69, 1)'
+                                    'rgba(245, 158, 11, 1)',
+                                    'rgba(22, 163, 74, 1)',
+                                    'rgba(220, 38, 38, 1)'
                                 ],
                                 borderWidth: 2
                             }]
@@ -590,11 +672,18 @@
                                     display: true,
                                     text: 'Overall Status Distribution',
                                     font: {
-                                        size: 16
-                                    }
+                                        size: 16,
+                                        weight: 600
+                                    },
+                                    color: 'var(--primary-blue)'
                                 },
                                 legend: {
-                                    position: 'bottom'
+                                    position: 'bottom',
+                                    labels: {
+                                        color: 'var(--text-muted)',
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
                                 },
                                 tooltip: {
                                     callbacks: {

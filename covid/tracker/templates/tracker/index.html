@@ -1,12 +1,11 @@
 {% extends 'tracker/base.html' %}
 
-{% block title %}COVID-19 Data - India State Wise{% endblock %}
+{% block title %}COVID-19 Data Tracker{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-lg-8 mx-auto text-center">
-        <h1 class="text-head">COVID-19 Data Tracker
-        </h1>
+        <h1 class="text-head mb-3">COVID-19 Data Tracker</h1>
         <p class="lead text-muted mb-5">Get real-time COVID-19 statistics for Indian states with interactive visualizations</p>
     </div>
 </div>
@@ -14,12 +13,13 @@
 <!-- Search Form -->
 <div class="row justify-content-center mb-5">
     <div class="col-lg-6">
-        <div class="card shadow-lg">
-            <div class="card-body p-4">
-                <h4 class="card-title text-center mb-4">
-                    <i class="fas fa-search me-2 text-primary"></i>Search State Data
+        <div class="card">
+            <div class="card-header text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-search me-2"></i>Search State Data
                 </h4>
-                
+            </div>
+            <div class="card-body p-4">
                 <form method="post" action="{% url 'tracker:search_state' %}" id="searchForm">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -55,45 +55,45 @@
 <div class="row mb-5">
     <div class="col-12">
         <h3 class="text-center mb-4">
-            <i class="fas fa-info-circle me-2 text-info"></i>Quick Overview
+            <i class="fas fa-info-circle me-2 text-primary"></i>Quick Overview
         </h3>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card stats-card h-100" style="background: linear-gradient(45deg, #e08de9, #9d30aa);">
-            <div class="card-body text-center">
-                <i class="fas fa-map-marked-alt fa-2x mb-3"></i>
-                <h4>{{ total_states }}</h4>
+        <div class="card stats-card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                <h4 class="fw-bold">{{ total_states }}</h4>
                 <p class="mb-0">States Available</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #008053, #86ffd3);">
-            <div class="card-body text-center">
-                <i class="fas fa-users fa-2x mb-3"></i>
-                <h4>Real-time</h4>
+        <div class="card h-100 text-center" style="background-color: #dcfce7; color: #166534; border-color: #16a34a;">
+            <div class="card-body">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h4 class="fw-bold">Real-time</h4>
                 <p class="mb-0">Data Updates</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #364caf, #879dff);">
-            <div class="card-body text-center">
-                <i class="fas fa-chart-pie fa-2x mb-3"></i>
-                <h4>Interactive</h4>
+        <div class="card h-100 text-center" style="background-color: #fef3c7; color: #92400e; border-color: #f59e0b;">
+            <div class="card-body">
+                <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                <h4 class="fw-bold">Interactive</h4>
                 <p class="mb-0">Visualizations</p>
             </div>
         </div>
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-white h-100" style="background: linear-gradient(45deg, #ae1b1b, #da7979);">
-            <div class="card-body text-center">
-                <i class="fas fa-mobile-alt fa-2x mb-3"></i>
-                <h4>Mobile</h4>
+        <div class="card h-100 text-center" style="background-color: #ede9fe; color: #6b21a8; border-color: #9333ea;">
+            <div class="card-body">
+                <i class="fas fa-mobile-alt fa-3x mb-3"></i>
+                <h4 class="fw-bold">Mobile</h4>
                 <p class="mb-0">Responsive</p>
             </div>
         </div>
@@ -104,31 +104,31 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-list me-2"></i>Available States 
-                    <span class="badge bg-primary">{{ total_states }}</span>
+                    <span class="badge bg-primary ms-2">{{ total_states }}</span>
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     {% for state in states %}
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
-                            <a href="{% url 'tracker:search_state' %}" 
-                               class="text-decoration-none"
-                               onclick="fillStateForm('{{ state.state }}'); return false;">
-                                <div class="p-2 rounded bg-light hover-effect">
-                                    <i class="fas fa-map-pin me-2 text-primary"></i>
-                                    {{ state.state }}
-                                    <small class="text-muted d-block">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <div class="card hover-effect h-100" 
+                                 onclick="fillStateForm('{{ state.state }}');"
+                                 style="cursor: pointer;">
+                                <div class="card-body text-center py-3">
+                                    <i class="fas fa-map-pin mb-2 text-primary"></i>
+                                    <h6 class="card-title mb-2">{{ state.state }}</h6>
+                                    <small class="text-muted">
                                         Confirmed: {{ state.confirmed|floatformat:2 }}
                                     </small>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     {% empty %}
-                        <div class="col-12 text-center text-muted">
-                            <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                        <div class="col-12 text-center text-muted py-5">
+                            <i class="fas fa-exclamation-circle fa-3x mb-3"></i>
                             <p>No data available. Please add some states through the admin panel.</p>
                         </div>
                     {% endfor %}
@@ -141,33 +141,39 @@
 <!-- Instructions -->
 <div class="row mt-5">
     <div class="col-12">
-        <div class="card border-info">
-            <div class="card-header bg-info text-white">
+        <div class="card">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-question-circle me-2"></i>How to Use
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 mb-0">
+                    <div class="col-md-4 mb-4">
                         <div class="text-center">
-                            <i class="fas fa-search fa-3x text-info mb-3"></i>
-                            <h6>1. Search</h6>
-                            <p class="text-muted">Enter a state name in the search box above</p>
+                            <div class="mb-3">
+                                <i class="fas fa-search fa-3x text-primary"></i>
+                            </div>
+                            <h6 class="text-primary">1. Search</h6>
+                            <p class="text-muted mb-0">Enter a state name in the search box above</p>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-0">
+                    <div class="col-md-4 mb-4">
                         <div class="text-center">
-                            <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
-                            <h6>2. View Data</h6>
-                            <p class="text-muted">Get detailed statistics and interactive charts</p>
+                            <div class="mb-3">
+                                <i class="fas fa-chart-bar fa-3x" style="color: #16a34a;"></i>
+                            </div>
+                            <h6 style="color: #16a34a;">2. View Data</h6>
+                            <p class="text-muted mb-0">Get detailed statistics and interactive charts</p>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-0">
+                    <div class="col-md-4 mb-4">
                         <div class="text-center">
-                            <i class="fas fa-download fa-3x text-warning mb-3"></i>
-                            <h6>3. Analyze</h6>
-                            <p class="text-muted">Compare recovery rates and trends</p>
+                            <div class="mb-3">
+                                <i class="fas fa-download fa-3x" style="color: #f59e0b;"></i>
+                            </div>
+                            <h6 style="color: #f59e0b;">3. Analyze</h6>
+                            <p class="text-muted mb-0">Compare recovery rates and trends</p>
                         </div>
                     </div>
                 </div>
@@ -181,13 +187,21 @@
 <style>
     .hover-effect {
         transition: all 0.3s ease;
-        cursor: pointer;
+        border: 2px solid var(--border-color);
     }
     
     .hover-effect:hover {
-        background-color: #e9ecef !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-color: var(--secondary-blue);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+    }
+
+    .badge {
+        background-color: var(--primary-blue) !important;
+        color: var(--white);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.85em;
     }
 </style>
 {% endblock %}
