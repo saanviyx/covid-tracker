@@ -1,17 +1,26 @@
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-*.sqlite3
-*.env
+*.so
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+env/
 covid_env/
 
-# Django
-/staticfiles/
+# Django stuff
+*.log
+db.sqlite3
 media/
+staticfiles/
 
 # IDEs
 .vscode/
 .idea/
+
+# OS files
 .DS_Store
