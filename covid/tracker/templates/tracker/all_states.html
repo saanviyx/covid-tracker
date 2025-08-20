@@ -15,7 +15,7 @@
 <!-- Summary Cards -->
 <div class="row mb-5">
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-center h-100" style="background-color: var(--light-blue); border-color: var(--secondary-blue); color: var(--primary-blue);">
+        <div class="card text-center h-100 summary-card-primary">
             <div class="card-body">
                 <i class="fas fa-users fa-2x mb-3"></i>
                 <h3>{{ totals.confirmed|floatformat:2 }}</h3>
@@ -25,7 +25,7 @@
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-center h-100" style="background-color: #fef3c7; border-color: #f59e0b; color: #92400e;">
+        <div class="card text-center h-100 summary-card-warning">
             <div class="card-body">
                 <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
                 <h3>{{ totals.active|floatformat:2 }}</h3>
@@ -35,7 +35,7 @@
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-center h-100" style="background-color: #dcfce7; border-color: #16a34a; color: #166534;">
+        <div class="card text-center h-100 summary-card-success">
             <div class="card-body">
                 <i class="fas fa-heart fa-2x mb-3"></i>
                 <h3>{{ totals.recovered|floatformat:2 }}</h3>
@@ -45,7 +45,7 @@
     </div>
     
     <div class="col-lg-3 col-md-6 mb-3">
-        <div class="card text-center h-100" style="background-color: #fee2e2; border-color: #dc2626; color: #991b1b;">
+        <div class="card text-center h-100 summary-card-danger">
             <div class="card-body">
                 <i class="fas fa-skull fa-2x mb-3"></i>
                 <h3>{{ totals.deaths|floatformat:2 }}</h3>
@@ -59,7 +59,7 @@
 <div class="row mb-4">
     <div class="col-lg-6 mb-3">
         <div class="input-group">
-            <span class="input-group-text">
+            <span class="input-group-text search-icon">
                 <i class="fas fa-search"></i>
             </span>
             <input type="text" id="searchInput" class="form-control" placeholder="Search states...">
@@ -67,7 +67,7 @@
     </div>
     <div class="col-lg-6 mb-3">
         <div class="input-group">
-            <span class="input-group-text">
+            <span class="input-group-text sort-icon">
                 <i class="fas fa-sort"></i>
             </span>
             <select id="sortSelect" class="form-select">
@@ -82,8 +82,8 @@
 </div>
 
 <!-- States Table -->
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<div class="card states-table-card">
+    <div class="card-header states-table-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0">
             <i class="fas fa-table me-2"></i>State-wise Data
         </h4>
@@ -98,8 +98,8 @@
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0" id="statesTable">
-                <thead style="background-color: var(--light-blue); color: var(--primary-blue);">
+            <table class="table table-hover mb-0 states-table" id="statesTable">
+                <thead class="table-header-custom">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">State Name</th>
@@ -123,46 +123,44 @@
                         <td class="fw-bold text-center">{{ forloop.counter }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-map-pin me-2" style="color: var(--primary-blue);"></i>
+                                <i class="fas fa-map-pin me-2 state-pin-icon"></i>
                                 <strong>{{ state.state }}</strong>
                             </div>
                         </td>
                         <td class="text-center">
-                            <span class="badge rounded-pill" style="background-color: var(--primary-blue); color: var(--white); padding: 6px 12px;">
+                            <span class="badge rounded-pill badge-primary-custom">
                                 {{ state.confirmed|floatformat:2 }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <span class="badge rounded-pill" style="background-color: #f59e0b; color: white; padding: 6px 12px;">
+                            <span class="badge rounded-pill badge-warning-custom">
                                 {{ state.active|floatformat:2 }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <span class="badge rounded-pill" style="background-color: #16a34a; color: white; padding: 6px 12px;">
+                            <span class="badge rounded-pill badge-success-custom">
                                 {{ state.recovered|floatformat:2 }}
                             </span>
                         </td>
                         <td class="text-center">
-                            <span class="badge rounded-pill" style="background-color: #dc2626; color: white; padding: 6px 12px;">
+                            <span class="badge rounded-pill badge-danger-custom">
                                 {{ state.deaths|floatformat:2 }}
                             </span>
                         </td>
                         <td class="text-center">
                             {% if state.confirmed and state.confirmed > 0 and state.recovered %}
                                 {% widthratio state.recovered state.confirmed 100 as recovery_rate %}
-                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
-                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
-                                         style="background-color: #16a34a; color: white;"
+                                <div class="progress mx-auto custom-progress">
+                                    <div class="progress-bar progress-bar-success d-flex align-items-center justify-content-center fw-semibold" 
                                          data-width="{{ recovery_rate }}"
                                          title="{{ recovery_rate }}%">
                                         <small>{{ recovery_rate }}%</small>
                                     </div>
                                 </div>
                             {% elif state.recovery_rate %}
-                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
-                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
-                                         style="background-color: #16a34a; color: white;" 
-                                         data-width="{{ state.recovery_rate|floatformat:0 }};"
+                                <div class="progress mx-auto custom-progress">
+                                    <div class="progress-bar progress-bar-success d-flex align-items-center justify-content-center fw-semibold" 
+                                         data-width="{{ state.recovery_rate|floatformat:0 }}"
                                          title="{{ state.recovery_rate|floatformat:1 }}%">
                                         <small>{{ state.recovery_rate|floatformat:1 }}%</small>
                                     </div>
@@ -174,18 +172,16 @@
                         <td class="text-center">
                             {% if state.confirmed and state.confirmed > 0 and state.deaths %}
                                 {% widthratio state.deaths state.confirmed 100 as death_rate %}
-                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
-                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
-                                         style="background-color: #dc2626; color: white;"
+                                <div class="progress mx-auto custom-progress">
+                                    <div class="progress-bar progress-bar-danger d-flex align-items-center justify-content-center fw-semibold" 
                                          data-width="{{ death_rate }}"
                                          title="{{ death_rate }}%">
                                         <small>{{ death_rate }}%</small>
                                     </div>
                                 </div>
                             {% elif state.death_rate %}
-                                <div class="progress mx-auto" style="height: 25px; width: 100px; background-color: #f1f5f9; border: 2px solid var(--border-color); border-radius: 8px;">
-                                    <div class="progress-bar d-flex align-items-center justify-content-center fw-semibold" 
-                                         style="background-color: #dc2626; color: white;"
+                                <div class="progress mx-auto custom-progress">
+                                    <div class="progress-bar progress-bar-danger d-flex align-items-center justify-content-center fw-semibold" 
                                          data-width="{{ state.death_rate|floatformat:0 }}"
                                          title="{{ state.death_rate|floatformat:1 }}%">
                                         <small>{{ state.death_rate|floatformat:1 }}%</small>
@@ -231,12 +227,12 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-6 mb-4">
-                        <div class="chart-container" style="position: relative; height: 300px; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                        <div class="chart-container">
                             <canvas id="topStatesChart"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-6 mb-4">
-                        <div class="chart-container" style="position: relative; height: 300px; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                        <div class="chart-container">
                             <canvas id="statusDistributionChart"></canvas>
                         </div>
                     </div>
@@ -269,59 +265,154 @@
 
 {% block extra_css %}
 <style>
-    .table {
-        vertical-align: middle;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        background-color: var(--white);
+    /* Summary Cards */
+    .summary-card-primary {
+        background-color: #dbeafe;
+        border-color: #3b82f6;
+        color: #1e3a8a;
     }
     
-    .table th {
+    .summary-card-warning {
+        background-color: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+    
+    .summary-card-success {
+        background-color: #dcfce7;
+        border-color: #16a34a;
+        color: #166534;
+    }
+    
+    .summary-card-danger {
+        background-color: #fee2e2;
+        border-color: #dc2626;
+        color: #991b1b;
+    }
+    
+    /* Input Group Icons */
+    .search-icon, .sort-icon {
+        background-color: #dbeafe;
+        border: 2px solid #e2e8f0;
+        color: #1e3a8a;
+        font-weight: 500;
+    }
+    
+    /* Table Styling */
+    .states-table-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .states-table-header {
+        background-color: #dbeafe;
+        border-bottom: 2px solid #e2e8f0;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+    
+    .states-table {
+        vertical-align: middle;
+        background-color: #ffffff;
+    }
+    
+    .table-header-custom {
+        background-color: #dbeafe;
+        color: #1e3a8a;
+    }
+    
+    .table-header-custom th {
         font-weight: 600;
         border: none;
         padding: 16px 12px;
         text-align: center;
     }
     
-    .table td {
+    .states-table td {
         vertical-align: middle;
-        border-color: var(--border-color);
+        border-color: #e2e8f0;
         padding: 12px;
     }
 
-    .table-hover tbody tr:hover {
+    .states-table tbody tr:hover {
         background-color: rgba(59, 130, 246, 0.05);
     }
     
-    .progress {
+    .state-pin-icon {
+        color: #1e3a8a;
+    }
+    
+    /* Custom Badges */
+    .badge-primary-custom {
+        background-color: #1e3a8a;
+        color: #ffffff;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+    
+    .badge-warning-custom {
+        background-color: #f59e0b;
+        color: white;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+    
+    .badge-success-custom {
+        background-color: #16a34a;
+        color: white;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+    
+    .badge-danger-custom {
+        background-color: #dc2626;
+        color: white;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+    
+    /* Progress Bars */
+    .custom-progress {
+        height: 25px;
+        width: 100px;
         background-color: #f1f5f9;
-        border: 2px solid var(--border-color);
+        border: 2px solid #e2e8f0;
         border-radius: 8px;
         overflow: hidden;
     }
     
-    .progress-bar {
+    .progress-bar-success {
+        background-color: #16a34a;
+        color: white;
         font-size: 0.75em;
         line-height: 1;
         transition: width 0.6s ease;
         border-radius: 6px;
     }
     
-    .badge {
-        font-size: 0.85em;
-        padding: 6px 12px;
+    .progress-bar-danger {
+        background-color: #dc2626;
+        color: white;
+        font-size: 0.75em;
+        line-height: 1;
+        transition: width 0.6s ease;
         border-radius: 6px;
-        font-weight: 600;
     }
     
+    /* Chart Containers */
     .chart-container {
+        position: relative;
+        height: 300px;
         max-height: 300px;
-        background-color: var(--white);
-        border: 2px solid var(--border-color);
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
         border-radius: 8px;
         padding: 20px;
     }
     
+    /* Button Styling */
     .btn-group .btn {
         margin-left: 0.25rem;
         border-radius: 6px;
@@ -333,18 +424,13 @@
         transform: translateY(-2px);
     }
     
+    /* Loading State */
     .loading {
         opacity: 0.5;
         pointer-events: none;
     }
     
-    .input-group-text {
-        background-color: var(--light-blue);
-        border: 2px solid var(--border-color);
-        color: var(--primary-blue);
-        font-weight: 500;
-    }
-    
+    /* Print Styles */
     @media print {
         .btn, .card-header .btn-group, .input-group, canvas, .chart-container { 
             display: none !important; 
@@ -356,27 +442,28 @@
         body { 
             background: white !important; 
         }
-        .table { 
+        .states-table { 
             font-size: 12px; 
         }
-        .badge {
+        .badge-primary-custom, .badge-warning-custom, .badge-success-custom, .badge-danger-custom {
             background-color: #6c757d !important;
             color: black !important;
         }
     }
     
+    /* Mobile Responsive */
     @media (max-width: 768px) {
-        .progress {
+        .custom-progress {
             width: 60px !important;
             height: 20px !important;
         }
-        .progress small {
+        .custom-progress small {
             font-size: 0.7em;
         }
         .chart-container {
             height: 250px;
         }
-        .badge {
+        .badge-primary-custom, .badge-warning-custom, .badge-success-custom, .badge-danger-custom {
             font-size: 0.75em;
             padding: 4px 8px;
         }
@@ -527,9 +614,9 @@
         const notification = document.createElement('div');
         notification.className = 'alert position-fixed';
         
-        const bgColor = type === 'success' ? 'var(--light-blue)' : '#fee2e2';
-        const borderColor = type === 'success' ? 'var(--secondary-blue)' : '#dc2626';
-        const textColor = type === 'success' ? 'var(--primary-blue)' : '#991b1b';
+        const bgColor = type === 'success' ? '#dbeafe' : '#fee2e2';
+        const borderColor = type === 'success' ? '#3b82f6' : '#dc2626';
+        const textColor = type === 'success' ? '#1e3a8a' : '#991b1b';
         const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
         
         notification.style.cssText = `
@@ -603,7 +690,7 @@
                                         size: 16,
                                         weight: 600
                                     },
-                                    color: 'var(--primary-blue)'
+                                    color: '#1e3a8a'
                                 },
                                 legend: {
                                     display: false
@@ -617,18 +704,18 @@
                                             return value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : 
                                                    value >= 1000 ? (value/1000).toFixed(1) + 'K' : value;
                                         },
-                                        color: 'var(--text-muted)'
+                                        color: '#64748b'
                                     },
                                     grid: {
-                                        color: 'var(--border-color)'
+                                        color: '#e2e8f0'
                                     }
                                 },
                                 x: {
                                     ticks: {
-                                        color: 'var(--text-muted)'
+                                        color: '#64748b'
                                     },
                                     grid: {
-                                        color: 'var(--border-color)'
+                                        color: '#e2e8f0'
                                     }
                                 }
                             }
@@ -675,12 +762,12 @@
                                         size: 16,
                                         weight: 600
                                     },
-                                    color: 'var(--primary-blue)'
+                                    color: '#1e3a8a'
                                 },
                                 legend: {
                                     position: 'bottom',
                                     labels: {
-                                        color: 'var(--text-muted)',
+                                        color: '#64748b',
                                         padding: 20,
                                         usePointStyle: true
                                     }
