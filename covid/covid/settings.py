@@ -34,8 +34,7 @@ SECRET_KEY = 'django-insecure-myft$kireqw^dvbzr)%%w1#u^uaolvbp_m_j08x3l8$nt8__+1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['covid-tracker-ungp.onrender.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
