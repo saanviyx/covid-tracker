@@ -505,6 +505,15 @@
             updateRowNumbers();
         }, 300);
     });
+
+    // Progress Width Initialization
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".progress-bar").forEach(function(bar) {
+            const width = bar.dataset.width || 0;
+            bar.style.width = width + "%";
+        });
+    });
+
     
     // Sort functionality
     document.getElementById('sortSelect').addEventListener('change', function() {
